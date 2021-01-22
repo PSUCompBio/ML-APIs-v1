@@ -19,15 +19,17 @@ def upload_result(result,s3_path):
 
 @mps.post('/mps-single',status_code=201)
 async def predict_mps(data:MPSData,background_tasks: BackgroundTasks):
-    obj = bucket.Object(
-        key=data.simulation_path)  # example: market/zone1/data.csv
-    # get the object
-    response = obj.get()
-    # read the contents of the file
-    input_data = response['Body'].read().decode()
 
-    json_data = json.loads(input_data)
     try:
+
+        obj = bucket.Object(
+            key=data.simulation_path)  # example: market/zone1/data.csv
+        # get the object
+        response = obj.get()
+        # read the contents of the file
+        input_data = response['Body'].read().decode()
+
+        json_data = json.loads(input_data)
         feature = create_input_feature_table(json_data)
 
         result = await MPSModel.predict_mps(feature)
@@ -36,5 +38,4 @@ async def predict_mps(data:MPSData,background_tasks: BackgroundTasks):
 
         return {"message":f"Result file is available at {result_path}", "success":True}
     except Exception as E:
-        return {"message":str(E),
-                "success":False}
+        return {"message":str(E),"success":False}
