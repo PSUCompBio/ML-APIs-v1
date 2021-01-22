@@ -27,9 +27,9 @@ async def predict_mps(data:MPSData,background_tasks: BackgroundTasks):
     input_data = response['Body'].read().decode()
 
     json_data = json.loads(input_data)
-    feature = create_input_feature_table(json_data)
-
     try:
+        feature = create_input_feature_table(json_data)
+
         result = await MPSModel.predict_mps(feature)
         result_path = os.path.join(os.path.dirname(data.simulation_path),os.path.basename(PATH_RESULT_FILE))
         background_tasks.add_task(upload_result,result,result_path)
